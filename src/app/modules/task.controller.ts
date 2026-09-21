@@ -63,25 +63,25 @@ const updateTask = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
-const updateTaskStatusPriority = catchAsync(async (req: Request, res: Response) => {
-	const result = await taskService.updateTaskStatusPriority(parseTaskId(req.params.id), req.body);
+const moveTask = catchAsync(async (req: Request, res: Response) => {
+	const result = await taskService.moveTask(parseTaskId(req.params.id), req.body);
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: "Task status and priority updated successfully",
+		message: "Task moved successfully",
 		data: result,
 	});
 });
 
 const deleteTask = catchAsync(async (req: Request, res: Response) => {
-	const result = await taskService.deleteTask(parseTaskId(req.params.id));
+	await taskService.deleteTask(parseTaskId(req.params.id));
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
 		message: "Task deleted successfully",
-		data: result,
+		data: []
 	});
 });
 
@@ -91,6 +91,6 @@ export const taskController = {
 	getTaskById,
 	createTask,
 	updateTask,
-	updateTaskStatusPriority,
+	moveTask,
 	deleteTask,
 };

@@ -37,15 +37,6 @@ export const updateTaskSchema = z.object({
   }),
 });
 
-export const updateTaskStatusPrioritySchema = z.object({
-  body: z.object({
-    priority: taskPrioritySchema.optional(),
-    status: taskStatusSchema.optional(),
-  }).refine((body) => body.priority !== undefined || body.status !== undefined, {
-    message: "Status or priority is required",
-  }),
-});
-
 export const taskQuerySchema = z.object({
   query: z.object({
     search: z.string().trim().optional(),
@@ -55,5 +46,12 @@ export const taskQuerySchema = z.object({
     limit: z.coerce.number().int().min(1).max(100).optional(),
     sortBy: z.enum(["createdAt", "updatedAt", "title", "priority", "status"]).optional(),
     sortOrder: z.enum(["asc", "desc"]).optional(),
+  }),
+});
+
+export const moveTaskSchema = z.object({
+  body: z.object({
+    targetStatus: taskStatusSchema,
+    targetPosition: z.coerce.number().int().min(0),
   }),
 });

@@ -13,11 +13,6 @@ export type UpdateTaskInput = Omit<Prisma.TaskUpdateInput, "status" | "priority"
 	priority?: TaskPriority;
 };
 
-export type UpdateTaskStatusPriorityInput = {
-	status?: TaskStatus;
-	priority?: TaskPriority;
-};
-
 export type TaskQueryInput = {
 	search?: string;
 	status?: TaskStatus;
@@ -26,4 +21,9 @@ export type TaskQueryInput = {
 	limit?: number;
 	sortBy?: "createdAt" | "updatedAt" | "title" | "priority" | "status";
 	sortOrder?: "asc" | "desc";
+};
+
+export type MoveTaskInput = {
+	targetStatus: TaskStatus;
+	targetPosition: number;
 };

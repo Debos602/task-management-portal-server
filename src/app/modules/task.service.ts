@@ -5,8 +5,8 @@ import prisma from "../../shared/prisma";
 import {
 	CreateTaskInput,
 	UpdateTaskInput,
-	UpdateTaskStatusPriorityInput,
 	TaskQueryInput,
+	MoveTaskInput,
 } from "./task.interface";
 
 
@@ -27,13 +27,16 @@ const getTasks = async (query: TaskQueryInput) => {
 	};
 	const sortBy = query.sortBy || "createdAt";
 	const sortOrder = query.sortOrder || "desc";
+	const orderBy = sortBy === "createdAt"
+		? [{ position: "asc" as const }, { createdAt: sortOrder }]
+		: { [sortBy]: sortOrder };
 
 	const [data, total] = await Promise.all([
 		prisma.task.findMany({
 			where,
 			skip,
 			take: limit,
-			orderBy: { [sortBy]: sortOrder },
+			orderBy,
 		}),
 		prisma.task.count({ where }),
 	]);
@@ -85,13 +88,18 @@ const getTaskById = async (id: number) => {
 };
 
 const createTask = async (payload: CreateTaskInput) => {
+	const status = payload.status === "In Progress" ? Status.In_Progress : payload.status || Status.Pending;
+	const lastTask = await prisma.task.findFirst({
+		where: { status },
+		orderBy: { position: "desc" },
+		select: { position: true },
+	});
+
 	return prisma.task.create({
 		data: {
 			...payload,
-			status:
-				payload.status === "In Progress"
-					? Status.In_Progress
-					: payload.status,
+			status,
+			position: (lastTask?.position ?? -1) + 1,
 		},
 	});
 };
@@ -111,20 +119,47 @@ const updateTask = async (id: number, payload: UpdateTaskInput) => {
 	});
 };
 
-const updateTaskStatusPriority = async (
-	id: number,
-	payload: UpdateTaskStatusPriorityInput,
-) => {
-	await getTaskById(id);
+const moveTask = async (id: number, payload: MoveTaskInput) => {
+	const targetStatus = payload.targetStatus === "In Progress"
+		? Status.In_Progress
+		: payload.targetStatus;
+	const task = await getTaskById(id);
+	const targetPosition = Math.max(0, payload.targetPosition);
 
-	return prisma.task.update({
-		where: { id },
-		data: {
-			...(payload.priority !== undefined && { priority: payload.priority }),
-			...(payload.status !== undefined && {
-				status: payload.status === "In Progress" ? Status.In_Progress : payload.status,
-			}),
-		},
+	return prisma.$transaction(async (transaction) => {
+		if (task.status === targetStatus) {
+			if (targetPosition > task.position) {
+				await transaction.task.updateMany({
+					where: {
+						status: targetStatus,
+						position: { gt: task.position, lte: targetPosition },
+					},
+					data: { position: { decrement: 1 } },
+				});
+			} else if (targetPosition < task.position) {
+				await transaction.task.updateMany({
+					where: {
+						status: targetStatus,
+						position: { gte: targetPosition, lt: task.position },
+					},
+					data: { position: { increment: 1 } },
+				});
+			}
+		} else {
+			await transaction.task.updateMany({
+				where: { status: task.status, position: { gt: task.position } },
+				data: { position: { decrement: 1 } },
+			});
+			await transaction.task.updateMany({
+				where: { status: targetStatus, position: { gte: targetPosition } },
+				data: { position: { increment: 1 } },
+			});
+		}
+
+		return transaction.task.update({
+			where: { id },
+			data: { status: targetStatus, position: targetPosition },
+		});
 	});
 };
 
@@ -140,6 +175,6 @@ export const taskService = {
 	getTaskById,
 	createTask,
 	updateTask,
-	updateTaskStatusPriority,
+	moveTask,
 	deleteTask,
 };

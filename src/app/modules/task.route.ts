@@ -3,9 +3,9 @@ import { taskController } from "./task.controller";
 import validateRequest from "../middlewares/validateRequest";
 import {
 	createTaskSchema,
+	moveTaskSchema,
 	taskIdParamSchema,
 	taskQuerySchema,
-	updateTaskStatusPrioritySchema,
 } from "./task.validation";
 
 
@@ -19,10 +19,10 @@ router.get("/", validateRequest(taskQuerySchema), taskController.getTasks);
 router.get("/:id", validateRequest(taskIdParamSchema), taskController.getTaskById);
 router.post("/", validateRequest(createTaskSchema), taskController.createTask);
 router.patch(
-	"/:id/status-priority",
+	"/:id/move",
 	validateRequest(taskIdParamSchema),
-	validateRequest(updateTaskStatusPrioritySchema),
-	taskController.updateTaskStatusPriority,
+	validateRequest(moveTaskSchema),
+	taskController.moveTask,
 );
 router.put(
 	"/:id",

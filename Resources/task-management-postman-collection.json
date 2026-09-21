@@ -87,6 +87,24 @@
       }
     },
     {
+      "name": "Move Task (Drag and Drop)",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"targetStatus\": \"In Progress\",\n  \"targetPosition\": 0\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/tasks/:id/move",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "tasks", ":id", "move"],
+          "variable": [{ "key": "id", "value": "" }]
+        },
+        "description": "Moves a task to a status column and zero-based position."
+      }
+    },
+    {
       "name": "Update Task",
       "request": {
         "method": "PUT",
