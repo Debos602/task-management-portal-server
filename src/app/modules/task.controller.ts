@@ -7,13 +7,25 @@ import { taskService } from "./task.service";
 
 const parseTaskId = (value: string) => Number(value);
 
-const getTasks = catchAsync( async (_req: Request, res: Response) => {
-	const result = await taskService.getTasks();
+const getTasks = catchAsync(async (req: Request, res: Response) => {
+	const result = await taskService.getTasks(req.query);
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
 		message: "Tasks retrieved successfully",
+		meta: result.meta,
+		data: result.data,
+	});
+});
+
+const getDashboardState = catchAsync(async (_req: Request, res: Response) => {
+	const result = await taskService.getDashboardState();
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Dashboard state retrieved successfully",
 		data: result,
 	});
 });
@@ -51,6 +63,17 @@ const updateTask = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const updateTaskStatusPriority = catchAsync(async (req: Request, res: Response) => {
+	const result = await taskService.updateTaskStatusPriority(parseTaskId(req.params.id), req.body);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Task status and priority updated successfully",
+		data: result,
+	});
+});
+
 const deleteTask = catchAsync(async (req: Request, res: Response) => {
 	const result = await taskService.deleteTask(parseTaskId(req.params.id));
 
@@ -64,8 +87,10 @@ const deleteTask = catchAsync(async (req: Request, res: Response) => {
 
 export const taskController = {
 	getTasks,
+	getDashboardState,
 	getTaskById,
 	createTask,
 	updateTask,
+	updateTaskStatusPriority,
 	deleteTask,
 };

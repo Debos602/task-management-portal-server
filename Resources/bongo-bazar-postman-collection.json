@@ -1209,6 +1209,114 @@
           }
         }
       ]
+    },
+    {
+      "name": "Tasks",
+      "description": "Task management and dashboard APIs",
+      "item": [
+        {
+          "name": "List Tasks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tasks"]
+            }
+          }
+        },
+        {
+          "name": "Dashboard State",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tasks", "dashboard"]
+            },
+            "description": "Returns total tasks, counts by status and priority, and the five most recent tasks."
+          }
+        },
+        {
+          "name": "Get Task",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tasks", ":id"],
+              "variable": [{ "key": "id", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Create Task",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Prepare dashboard report\",\n  \"description\": \"Review this week's task progress\",\n  \"priority\": \"High\",\n  \"status\": \"Pending\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tasks"]
+            }
+          }
+        },
+        {
+          "name": "Update Task Status and Priority",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\",\n  \"priority\": \"High\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks/:id/status-priority",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tasks", ":id", "status-priority"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Updates either status, priority, or both. Valid statuses: Pending, In Progress, Completed."
+          }
+        },
+        {
+          "name": "Update Task",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated dashboard report\",\n  \"description\": \"Updated task description\",\n  \"priority\": \"Medium\",\n  \"status\": \"Completed\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tasks", ":id"],
+              "variable": [{ "key": "id", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tasks/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tasks", ":id"],
+              "variable": [{ "key": "id", "value": "" }]
+            }
+          }
+        }
+      ]
     }
   ],
   "variable": [
