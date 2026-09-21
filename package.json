@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
     "db:generate": "prisma generate --schema=./prisma/schema",
     "db:migrate": "prisma migrate --schema=./prisma/schema",
